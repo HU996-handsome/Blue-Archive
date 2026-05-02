@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0a1a" />
+    <!-- OG Tags -->
+    <meta property="og:title" content="Blue Archive 资源中转站" />
+    <meta property="og:description" content="蔚蓝档案常用站点导航与资源整理，收录 Wiki、剧情站、工具站等 15+ 个常用站点。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://blue-archive-transfer.netlify.app/" />
+    <meta property="og:image" content="https://blue-archive-transfer.netlify.app/assets/avatar.webp" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Blue Archive 资源中转站" />
+    <meta name="twitter:description" content="蔚蓝档案常用站点导航与资源整理" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/CeriseBouquet/static@master/fonts/RoGSans_sliced/font.css" />
+    <link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/CeriseBouquet/static@master/fonts/GlowSans/font.css" />
+    <title>Blue Archive 资源中转站</title>
+    <!-- Loading screen -->
+    <style>
+      #app-loading {
+        position: fixed; inset: 0; z-index: 99999;
+        background: #0a0a1a;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 24px;
+        transition: opacity 0.5s ease;
+      }
+      #app-loading.hide { opacity: 0; pointer-events: none; }
+      #app-loading .loading-icon {
+        font-size: 3rem;
+        animation: loadPulse 1.5s ease-in-out infinite;
+        background: linear-gradient(135deg, #2dafff, #f5c842);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      #app-loading .loading-text {
+        color: rgba(255,255,255,0.5);
+        font-family: 'GlowSans', sans-serif;
+        font-size: 0.85rem;
+        letter-spacing: 2px;
+      }
+      #app-loading .loading-bar {
+        width: 120px; height: 3px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      #app-loading .loading-bar::after {
+        content: '';
+        display: block;
+        width: 40%; height: 100%;
+        background: linear-gradient(90deg, #2dafff, #f5c842);
+        border-radius: 3px;
+        animation: loadSlide 1.2s ease-in-out infinite;
+      }
+      @keyframes loadPulse {
+        0%,100% { transform: scale(1); opacity: 0.6; }
+        50% { transform: scale(1.15); opacity: 1; }
+      }
+      @keyframes loadSlide {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(350%); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading screen -->
+    <div id="app-loading">
+      <div class="loading-icon">✦</div>
+      <div class="loading-bar"></div>
+      <div class="loading-text">正在加载中...</div>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      // hide loading after app mounts
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const el = document.getElementById('app-loading');
+          if (el) { el.classList.add('hide'); setTimeout(() => el.remove(), 600); }
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

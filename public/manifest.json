@@ -1,0 +1,21 @@
+{
+  "name": "Blue Archive 资源中转站",
+  "short_name": "BA中转站",
+  "description": "蔚蓝档案常用站点导航与资源整理",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a",
+  "icons": [
+    {
+      "src": "/assets/avatar.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "/assets/avatar.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

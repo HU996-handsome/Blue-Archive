@@ -104,10 +104,19 @@ const colorPresets = [
           </div>
 
           <!-- 恢复默认 -->
-          <div class="setting-group" style="border-bottom:none;">
+          <div class="setting-group">
             <button class="btn btn-ghost reset-btn" @click="resetSettings">
               恢复默认设置
             </button>
+          </div>
+
+          <!-- 数据说明 -->
+          <div class="setting-group data-notice" style="border-bottom:none;">
+            <div class="data-notice-icon">ℹ️</div>
+            <div class="data-notice-text">
+              <strong>数据说明</strong>
+              <p>收藏、设置、抽卡记录等数据保存在当前设备的浏览器本地存储中，不同设备之间的数据不会同步。清除浏览器缓存会丢失数据。</p>
+            </div>
           </div>
         </div>
       </div>
@@ -312,6 +321,41 @@ const colorPresets = [
   width: 100%;
   justify-content: center;
   margin-top: 4px;
+}
+
+/* Data notice */
+.data-notice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  background: rgba(45, 175, 255, 0.04);
+  border-radius: 10px;
+  margin: 4px 0;
+}
+
+.data-notice-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.data-notice-text {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.data-notice-text strong {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.data-notice-text p {
+  margin: 0;
+  opacity: 0.8;
 }
 
 /* Panel transition */

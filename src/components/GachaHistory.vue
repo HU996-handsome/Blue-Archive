@@ -1,7 +1,5 @@
 <script setup>
-import { ref, inject } from 'vue'
-
-const debouncedSave = inject('debouncedSave')
+import { ref } from 'vue'
 
 const STORAGE_KEY = 'ba-gacha-history'
 const history = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'))
@@ -22,13 +20,11 @@ function addEntry(results) {
   history.value.unshift(entry)
   if (history.value.length > 50) history.value.pop()
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history.value))
-  debouncedSave()
 }
 
 function clearHistory() {
   history.value = []
   localStorage.removeItem(STORAGE_KEY)
-  debouncedSave()
 }
 
 function getStars(n) { return '★'.repeat(n) }

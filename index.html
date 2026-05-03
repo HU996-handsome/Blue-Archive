@@ -20,71 +20,178 @@
     <link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/CeriseBouquet/static@master/fonts/RoGSans_sliced/font.css" />
     <link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/CeriseBouquet/static@master/fonts/GlowSans/font.css" />
     <title>Blue Archive 资源中转站</title>
-    <!-- Loading screen -->
+    <!-- Loading screen — Connecting -->
     <style>
+      @font-face {
+        font-family: 'TVPS-Vain-Capital-2';
+        src: url('https://webcnstatic.yostar.net/ba_cn_web/prod/web/assets/TVPS-Vain-Capital-2.cca90a05.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
       #app-loading {
         position: fixed; inset: 0; z-index: 99999;
         background: #0a0a1a;
         display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        gap: 24px;
-        transition: opacity 0.5s ease;
-      }
-      #app-loading.hide { opacity: 0; pointer-events: none; }
-      #app-loading .loading-icon {
-        font-size: 3rem;
-        animation: loadPulse 1.5s ease-in-out infinite;
-        background: linear-gradient(135deg, #2dafff, #f5c842);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      #app-loading .loading-text {
-        color: rgba(255,255,255,0.5);
-        font-family: 'GlowSans', sans-serif;
-        font-size: 0.85rem;
-        letter-spacing: 2px;
-      }
-      #app-loading .loading-bar {
-        width: 120px; height: 3px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 3px;
+        transition: opacity 0.8s ease;
         overflow: hidden;
       }
-      #app-loading .loading-bar::after {
-        content: '';
-        display: block;
-        width: 40%; height: 100%;
-        background: linear-gradient(90deg, #2dafff, #f5c842);
-        border-radius: 3px;
-        animation: loadSlide 1.2s ease-in-out infinite;
+      #app-loading.hide { opacity: 0; pointer-events: none; }
+      #app-loading .loading-bg {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 0.4;
+        pointer-events: none;
       }
-      @keyframes loadPulse {
-        0%,100% { transform: scale(1); opacity: 0.6; }
-        50% { transform: scale(1.15); opacity: 1; }
+      #app-loading .loading-avatar {
+        width: 160px; height: 213px;
+        filter: drop-shadow(0 4px 20px rgba(18, 137, 249, 0.3));
+        position: relative;
+        z-index: 1;
       }
-      @keyframes loadSlide {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(350%); }
+      #app-loading .loading-avatar img {
+        width: 100%; height: 100%;
+        object-fit: contain;
+      }
+      #app-loading .progress-section {
+        margin-top: 28px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+      #app-loading .connecting-text {
+        font-family: 'TVPS-Vain-Capital-2', 'Rajdhani', sans-serif;
+        font-size: 1.8rem;
+        letter-spacing: 3px;
+        color: #1289f9;
+        margin-bottom: 12px;
+      }
+      #app-loading .percent-text {
+        font-family: 'TVPS-Vain-Capital-2', 'Rajdhani', monospace;
+        font-size: 1.4rem;
+        color: #1289f9;
+        letter-spacing: 2px;
+      }
+      @media (max-width: 600px) {
+        #app-loading .loading-avatar { width: 110px; height: 147px; }
+        #app-loading .progress-section { margin-top: 20px; }
+        #app-loading .connecting-text { font-size: 1.4rem; }
+        #app-loading .percent-text { font-size: 1.1rem; }
       }
     </style>
   </head>
   <body>
     <!-- Loading screen -->
     <div id="app-loading">
-      <div class="loading-icon">✦</div>
-      <div class="loading-bar"></div>
-      <div class="loading-text">正在加载中...</div>
+      <video class="loading-bg" id="loading-bg-video" autoplay muted loop playsinline></video>
+      <div class="loading-avatar" id="arona-avatar">
+        <img src="/assets/arona_bounce/avatar1.c18ce793.png" alt="Arona" id="arona-sprite" />
+      </div>
+      <div class="progress-section">
+        <div class="connecting-text">connecting...</div>
+        <div class="percent-text" id="load-percent">0%</div>
+      </div>
     </div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
     <script>
-      // hide loading after app mounts
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const el = document.getElementById('app-loading');
-          if (el) { el.classList.add('hide'); setTimeout(() => el.remove(), 600); }
-        }, 500);
-      });
+      (function() {
+        // Background video
+        document.getElementById('loading-bg-video').src = 'https://webcnstatic.yostar.net/ba_cn_web/prod/web/assets/home2.56146483.mp4';
+
+        var frames = [
+          '/assets/arona_bounce/avatar1.c18ce793.png',
+          '/assets/arona_bounce/avatar2.916294c1.png',
+          '/assets/arona_bounce/avatar3.5e643647.png',
+          '/assets/arona_bounce/avatar4.be61bf91.png',
+        ];
+        var avatar = document.getElementById('arona-avatar');
+        var img = document.getElementById('arona-sprite');
+        var percentEl = document.getElementById('load-percent');
+        var progress = 0;
+        var resourcesReady = false;
+        var minTimePassed = false;
+        var lastFrame = 0;
+        var startTime = Date.now();
+
+        // === Bounce animation — GSAP-style yoyo ===
+        var bounceT = 0;
+        var wasAbove = true;
+        var bounceTimer = setInterval(function() {
+          bounceT += 0.1;
+          var s = Math.sin(bounceT);
+          var y = Math.abs(s) * 25;
+          avatar.style.transform = 'translateY(' + (-y) + 'px)';
+          // Switch frame at every zero crossing (half cycle)
+          if ((s < 0 && wasAbove) || (s > 0 && !wasAbove)) {
+            var f;
+            do { f = Math.floor(Math.random() * 4); } while (f === lastFrame);
+            lastFrame = f;
+            img.src = frames[f];
+          }
+          wasAbove = s >= 0;
+        }, 30);
+
+        // === Preload resources ===
+        var preloadSrcs = [
+          '/assets/avatar.webp',
+        ];
+        // Preload Arona frames
+        frames.forEach(function(src) {
+          var i = new Image();
+          i.src = src;
+        });
+        // Preload other key assets
+        var loaded = 0;
+        var total = preloadSrcs.length + 4; // 4 arona frames + extras
+        preloadSrcs.forEach(function(src) {
+          var i = new Image();
+          i.onload = i.onerror = function() { loaded++; };
+          i.src = src;
+        });
+        // Count arona frames as loaded after a short delay
+        setTimeout(function() { loaded += 4; }, 800);
+
+        // Minimum display time: 4 seconds
+        setTimeout(function() { minTimePassed = true; }, 4000);
+
+        // Mark resources ready when window loads
+        window.addEventListener('load', function() {
+          setTimeout(function() { resourcesReady = true; }, 500);
+        });
+
+        // === Progress counter — slow and smooth ===
+        var progressTimer = setInterval(function() {
+          if (progress < 100) {
+            var target;
+            if (resourcesReady && minTimePassed) {
+              // All ready — fast finish
+              target = 100;
+              progress += (target - progress) * 0.06;
+              if (100 - progress < 0.5) progress = 100;
+            } else if (resourcesReady) {
+              // Resources ready but min time not passed — medium speed
+              target = 92;
+              progress += (target - progress) * 0.008;
+            } else {
+              // Still loading — slow crawl, stall near 80%
+              target = 80;
+              progress += (target - progress) * 0.003;
+              if (progress > 78 && !resourcesReady) {
+                progress += 0.005;
+              }
+            }
+            percentEl.textContent = Math.floor(progress > 100 ? 100 : progress) + '%';
+          } else {
+            clearInterval(progressTimer);
+            clearInterval(bounceTimer);
+            var el = document.getElementById('app-loading');
+            if (el) { el.classList.add('hide'); setTimeout(function() { el.remove(); }, 900); }
+          }
+        }, 30);
+      })();
     </script>
   </body>
 </html>

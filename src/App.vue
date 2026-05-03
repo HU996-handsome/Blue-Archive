@@ -13,6 +13,7 @@ import ChangelogPanel from './components/ChangelogPanel.vue'
 import BirthdayConfetti from './components/BirthdayConfetti.vue'
 import ToolsPanel from './components/ToolsPanel.vue'
 import AuthModal from './components/AuthModal.vue'
+import BouncingArona from './components/BouncingArona.vue'
 
 /* ========== Disclaimer ========== */
 const disclaimerVisible = ref(true)
@@ -33,7 +34,7 @@ function acceptDisclaimer() {
 disclaimerReady.value = true
 
 /* ========== Supabase Auth ========== */
-const { user, isAuthenticated, isConfigured, authLoading, syncOnLogin, syncOnLogout, signOut, debouncedSave, applyDataToLocal } = useSupabase()
+const { user, isAuthenticated, isConfigured, authLoading, signOut } = useSupabase()
 
 const showAuth = ref(false)
 const needsOnboarding = ref(false)
@@ -42,12 +43,6 @@ function toggleAuth() { showAuth.value = !showAuth.value }
 function closeAuth() { showAuth.value = false }
 
 async function onAuthSuccess() {
-  // After login, merge local data with cloud
-  const merged = await syncOnLogin()
-  if (merged) {
-    applyDataToLocal(merged)
-    // Sync avatar reactive state from merged data
-  }
   // Check if this user needs onboarding
   const uid = user.value?.id
   const onboardingKey = `ba-onboarding-done-${uid}`
@@ -61,10 +56,7 @@ function onOnboardingComplete() {
 }
 
 async function handleLogout() {
-  await syncOnLogout()
   await signOut()
-  // isAuthenticated becomes false → layout hides, auth-required screen shows
-  // Show auth modal for switching account
   setTimeout(() => { showAuth.value = true }, 300)
 }
 
@@ -77,7 +69,6 @@ provide('toggleAuth', toggleAuth)
 provide('closeAuth', closeAuth)
 provide('onAuthSuccess', onAuthSuccess)
 provide('handleLogout', handleLogout)
-provide('debouncedSave', debouncedSave)
 provide('needsOnboarding', needsOnboarding)
 provide('onOnboardingComplete', onOnboardingComplete)
 
@@ -175,7 +166,6 @@ function resetSettings() {
 
 watch(settings, (val) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-  debouncedSave()
 }, { deep: true })
 
 const showSettings = ref(false)
@@ -245,7 +235,8 @@ function toggleFavorite(url) {
   if (idx >= 0) favorites.value.splice(idx, 1)
   else favorites.value.push(url)
   localStorage.setItem(FAV_KEY, JSON.stringify(favorites.value))
-  debouncedSave()
+
+
 }
 
 function isFavorite(url) {
@@ -271,7 +262,6 @@ function addRecentVisit(link) {
   if (visits.length > 10) visits.pop()
   recentVisits.value = visits
   localStorage.setItem(RECENT_KEY, JSON.stringify(visits))
-  debouncedSave()
 }
 
 provide('recentVisits', recentVisits)
@@ -284,7 +274,6 @@ const clickStats = ref(JSON.parse(localStorage.getItem(STATS_KEY) || '{}'))
 function recordClick(url) {
   clickStats.value[url] = (clickStats.value[url] || 0) + 1
   localStorage.setItem(STATS_KEY, JSON.stringify(clickStats.value))
-  debouncedSave()
 }
 
 function getClickCount(url) {
@@ -322,7 +311,9 @@ onMounted(() => {
     supabase?.auth.signOut()
   }
 })
-onUnmounted(() => { document.removeEventListener('keydown', onKeydown) })
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <template>
@@ -504,6 +495,9 @@ onUnmounted(() => { document.removeEventListener('keydown', onKeydown) })
 
   <!-- Birthday Confetti -->
   <BirthdayConfetti v-if="!disclaimerVisible && isAuthenticated" />
+
+  <!-- Bouncing Arona -->
+  <BouncingArona v-if="!disclaimerVisible && isAuthenticated" />
 </template>
 
 <style scoped>

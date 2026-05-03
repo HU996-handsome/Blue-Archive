@@ -169,6 +169,35 @@ function debouncedSave() {
   }, 1000)
 }
 
+// Immediate save — for critical operations (favorites, etc.)
+function saveNow() {
+  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null }
+  if (user.value) {
+    saveUserData(collectLocalData())
+  }
+}
+
+// Save before page unload — uses keepalive so request completes after page closes
+function saveBeforeUnload() {
+  if (!supabase || !user.value) return
+  const data = collectLocalData()
+  fetch(`${supabaseUrl}/rest/v1/user_data?on_conflict=user_id`, {
+    method: 'POST',
+    keepalive: true,
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`,
+      'Prefer': 'resolution=merge-duplicates,return=minimal',
+    },
+    body: JSON.stringify({
+      user_id: user.value.id,
+      data: data,
+      updated_at: new Date().toISOString(),
+    }),
+  }).catch(() => {})
+}
+
 export function useSupabase() {
   return {
     supabase,
@@ -184,6 +213,8 @@ export function useSupabase() {
     syncOnLogin,
     syncOnLogout,
     debouncedSave,
+    saveNow,
+    saveBeforeUnload,
     collectLocalData,
     applyDataToLocal,
   }

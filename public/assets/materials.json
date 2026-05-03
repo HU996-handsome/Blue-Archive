@@ -1,0 +1,41 @@
+{
+  "materials": [
+    { "id": "exp_report_1", "name": { "zh": "初级经验书", "ja": "経験値書・初級" }, "rarity": 1, "icon": "📘" },
+    { "id": "exp_report_2", "name": { "zh": "中级经验书", "ja": "経験値書・中級" }, "rarity": 2, "icon": "📗" },
+    { "id": "exp_report_3", "name": { "zh": "高级经验书", "ja": "経験値書・上級" }, "rarity": 3, "icon": "📕" },
+    { "id": "credit_1", "name": { "zh": "信用点(小)", "ja": "クレジット(小)" }, "rarity": 1, "icon": "💰" },
+    { "id": "credit_2", "name": { "zh": "信用点(中)", "ja": "クレジット(中)" }, "rarity": 2, "icon": "💰" },
+    { "id": "credit_3", "name": { "zh": "信用点(大)", "ja": "クレジット(大)" }, "rarity": 3, "icon": "💰" },
+    { "id": "artifact_1", "name": { "zh": "初级碎片", "ja": "フラグメント・初級" }, "rarity": 1, "icon": "🔮" },
+    { "id": "artifact_2", "name": { "zh": "中级碎片", "ja": "フラグメント・中級" }, "rarity": 2, "icon": "🔮" },
+    { "id": "artifact_3", "name": { "zh": "高级碎片", "ja": "フラグメント・上級" }, "rarity": 3, "icon": "🔮" },
+    { "id": "gear_1", "name": { "zh": "初级装备珠", "ja": "装備珠・初級" }, "rarity": 1, "icon": "⚙️" },
+    { "id": "gear_2", "name": { "zh": "中级装备珠", "ja": "装備珠・中級" }, "rarity": 2, "icon": "⚙️" },
+    { "id": "gear_3", "name": { "zh": "高级装备珠", "ja": "装備珠・上級" }, "rarity": 3, "icon": "⚙️" },
+    { "id": "skill_book_1", "name": { "zh": "初级技能书", "ja": "スキルブック・初級" }, "rarity": 1, "icon": "📖" },
+    { "id": "skill_book_2", "name": { "zh": "中级技能书", "ja": "スキルブック・中級" }, "rarity": 2, "icon": "📖" },
+    { "id": "skill_book_3", "name": { "zh": "高级技能书", "ja": "スキルブック・上級" }, "rarity": 3, "icon": "📖" },
+    { "id": "omnifact", "name": { "zh": "万能碎片", "ja": "万能フラグメント" }, "rarity": 4, "icon": "✨" }
+  ],
+  "upgradeCosts": {
+    "level": [
+      { "to": 30, "exp": 5000, "credits": 10000 },
+      { "to": 50, "exp": 25000, "credits": 50000 },
+      { "to": 70, "exp": 100000, "credits": 200000 },
+      { "to": 80, "exp": 250000, "credits": 500000 },
+      { "to": 90, "exp": 500000, "credits": 1000000 }
+    ],
+    "skill": [
+      { "to": 2, "books": { "skill_book_1": 5 }, "credits": 5000 },
+      { "to": 3, "books": { "skill_book_1": 10, "skill_book_2": 3 }, "credits": 15000 },
+      { "to": 4, "books": { "skill_book_2": 5, "skill_book_3": 2 }, "credits": 50000 },
+      { "to": 5, "books": { "skill_book_3": 5 }, "credits": 100000 }
+    ],
+    "gear": [
+      { "to": 2, "parts": { "gear_1": 10 }, "credits": 10000 },
+      { "to": 3, "parts": { "gear_1": 20, "gear_2": 5 }, "credits": 30000 },
+      { "to": 4, "parts": { "gear_2": 10, "gear_3": 3 }, "credits": 80000 },
+      { "to": 5, "parts": { "gear_3": 8 }, "credits": 200000 }
+    ]
+  }
+}

@@ -1,25 +1,22 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
+import { useSchoolColors } from '../composables/useSchoolColors.js'
+
+const t = inject('t')
+const { getSchoolColor } = useSchoolColors()
 
 const allStudents = ref([])
 const currentYear = ref(new Date().getFullYear())
 const currentMonth = ref(new Date().getMonth()) // 0-indexed
 
-const schoolNames = {
-  Abydos: '阿拜多斯', Gehenna: '歌赫娜', Trinity: '三一', Millennium: '千年',
-  Hyakkiyako: '百鬼夜行', Shanhaijing: '山海经', RedWinter: '红冬', Valkyrie: '瓦尔基里',
-  SRT: 'SRT', Arius: '阿里乌斯', ETC: '其他',
-}
+const schoolNames = computed(() => ({
+  Abydos: t('schoolNames.Abydos'), Gehenna: t('schoolNames.Gehenna'), Trinity: t('schoolNames.Trinity'), Millennium: t('schoolNames.Millennium'),
+  Hyakkiyako: t('schoolNames.Hyakkiyako'), Shanhaijing: t('schoolNames.Shanhaijing'), RedWinter: t('schoolNames.RedWinter'), Valkyrie: t('schoolNames.Valkyrie'),
+  SRT: 'SRT', Arius: t('schoolNames.Arius'), ETC: t('schoolNames.ETC'),
+}))
 
-const schoolColors = {
-  Gehenna: '#ff6b6b', Trinity: '#74b9ff', Millennium: '#a29bfe',
-  Abydos: '#ffeaa7', Shanhaijing: '#55efc4', Hyakkiyako: '#fd79a8',
-  RedWinter: '#dfe6e9', SRT: '#00cec9', Arius: '#636e72',
-  Valkyrie: '#e17055',
-}
-
-const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-const weekDays = ['日', '一', '二', '三', '四', '五', '六']
+const monthNames = computed(() => t('tools.monthNames'))
+const weekDays = computed(() => t('tools.weekDays'))
 
 const calendarDays = computed(() => {
   const firstDay = new Date(currentYear.value, currentMonth.value, 1).getDay()
@@ -99,11 +96,11 @@ onMounted(async () => {
   <div class="cal-section glass-card">
     <div class="cal-header">
       <span class="cal-icon">📅</span>
-      <span class="cal-title">角色生日日历</span>
+      <span class="cal-title">{{ t('tools.birthdayCalendar') }}</span>
     </div>
     <div class="cal-nav">
       <button class="cal-nav-btn" @click="prevMonth">&lt;</button>
-      <span class="cal-nav-label" @click="goToday">{{ currentYear }}年 {{ monthNames[currentMonth] }}</span>
+      <span class="cal-nav-label" @click="goToday">{{ t('tools.yearMonth', { y: currentYear, m: monthNames[currentMonth] }) }}</span>
       <button class="cal-nav-btn" @click="nextMonth">&gt;</button>
     </div>
     <div class="cal-weekdays">
@@ -131,13 +128,13 @@ onMounted(async () => {
         <div class="cal-detail-title">🎂 {{ currentMonth + 1 }}月{{ selectedDay }}日</div>
         <div v-for="s in selectedStudents" :key="s.name" class="cal-detail-item">
           <span class="cal-detail-name">{{ s.name }}</span>
-          <span class="cal-detail-school" :style="{ color: schoolColors[s.school] || '#2dafff' }">{{ schoolNames[s.school] || s.school }}</span>
+          <span class="cal-detail-school" :style="{ color: getSchoolColor(s.school) }">{{ schoolNames[s.school] || s.school }}</span>
         </div>
       </div>
     </Transition>
     <div class="cal-legend">
-      <span class="cal-legend-item"><span class="cal-legend-dot today-dot"></span> 今天</span>
-      <span class="cal-legend-item"><span class="cal-legend-dot bd-dot"></span> 有生日</span>
+      <span class="cal-legend-item"><span class="cal-legend-dot today-dot"></span> {{ t('tools.legendToday') }}</span>
+      <span class="cal-legend-item"><span class="cal-legend-dot bd-dot"></span> {{ t('tools.legendBd') }}</span>
     </div>
   </div>
 </template>

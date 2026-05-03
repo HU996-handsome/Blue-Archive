@@ -1,10 +1,12 @@
 <script setup>
-import { inject } from 'vue'
+import { inject, computed } from 'vue'
 
 const showChangelog = inject('showChangelog')
 const closeChangelog = inject('closeChangelog')
+const t = inject('t')
+const locale = inject('locale')
 
-const changelogs = [
+const defaultChangelogs = [
   {
     date: '2026年5月3日',
     title: '账号系统 & 云端数据同步',
@@ -60,6 +62,8 @@ const changelogs = [
     tags: ['初始版本'],
   },
 ]
+
+const changelogs = computed(() => locale.value !== 'zh' ? t('changelog.entries') : defaultChangelogs)
 </script>
 
 <template>
@@ -67,7 +71,7 @@ const changelogs = [
     <div v-if="showChangelog" class="changelog-overlay" @click.self="closeChangelog()">
       <div class="changelog-panel glass">
         <div class="changelog-header">
-          <h2 class="changelog-title">更新公告</h2>
+          <h2 class="changelog-title">{{ t('changelog.title') }}</h2>
           <button class="close-btn" @click="closeChangelog()">✕</button>
         </div>
         <div class="changelog-body">

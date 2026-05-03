@@ -6,14 +6,20 @@ const updateSetting = inject('updateSetting')
 const resetSettings = inject('resetSettings')
 const showSettings = inject('showSettings')
 const closeSettings = inject('closeSettings')
+const t = inject('t')
+const locale = inject('locale')
+const setLocale = inject('setLocale')
+const currentTheme = inject('currentTheme')
+const setTheme = inject('setTheme')
+const getThemes = inject('getThemes')
 
 const colorPresets = [
-  { label: '蔚蓝', value: '45,175,255' },
-  { label: '粉樱', value: '255,158,205' },
-  { label: '金黄', value: '245,200,66' },
-  { label: '翠绿', value: '52,211,153' },
-  { label: '紫罗兰', value: '167,139,250' },
-  { label: '烈焰', value: '251,146,60' },
+  { labelKey: 0, value: '45,175,255' },
+  { labelKey: 1, value: '255,158,205' },
+  { labelKey: 2, value: '245,200,66' },
+  { labelKey: 3, value: '52,211,153' },
+  { labelKey: 4, value: '167,139,250' },
+  { labelKey: 5, value: '251,146,60' },
 ]
 
 </script>
@@ -23,17 +29,48 @@ const colorPresets = [
     <div v-if="showSettings" class="settings-overlay" @click.self="closeSettings()">
       <div class="settings-panel glass">
         <div class="settings-header">
-          <h2 class="settings-title">⚙️ 设置</h2>
+          <h2 class="settings-title">⚙️ {{ t('settings.title') }}</h2>
           <button class="close-btn" @click="closeSettings()">✕</button>
         </div>
 
         <div class="settings-body">
+          <!-- 语言切换 -->
+          <div class="setting-group">
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t('settings.language') }}</span>
+              </div>
+              <div class="lang-btns">
+                <button class="lang-btn" :class="{ active: locale === 'zh' }" @click="setLocale('zh')">中</button>
+                <button class="lang-btn" :class="{ active: locale === 'ja' }" @click="setLocale('ja')">日</button>
+              </div>
+            </div>
+
+            <!-- 主题切换 -->
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">{{ t('settings.theme') }}</span>
+              </div>
+              <div class="theme-dots">
+                <button
+                  v-for="th in getThemes()"
+                  :key="th.key"
+                  class="theme-dot"
+                  :class="{ active: currentTheme === th.key }"
+                  :style="{ background: th.color }"
+                  :title="th.label"
+                  @click="setTheme(th.key)"
+                ></button>
+              </div>
+            </div>
+          </div>
+
           <!-- 拖尾特效 -->
           <div class="setting-group">
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">鼠标拖尾</span>
-                <span class="setting-desc">鼠标移动时产生粒子拖尾</span>
+                <span class="setting-label">{{ t('settings.trail') }}</span>
+                <span class="setting-desc">{{ t('settings.trailDesc') }}</span>
               </div>
               <button class="toggle" :class="{ on: settings.trailEnabled }" @click="updateSetting('trailEnabled', !settings.trailEnabled)">
                 <span class="toggle-knob"></span>
@@ -42,8 +79,8 @@ const colorPresets = [
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">点击特效</span>
-                <span class="setting-desc">点击时产生光环与火花</span>
+                <span class="setting-label">{{ t('settings.clickEffect') }}</span>
+                <span class="setting-desc">{{ t('settings.clickEffectDesc') }}</span>
               </div>
               <button class="toggle" :class="{ on: settings.clickEffectEnabled }" @click="updateSetting('clickEffectEnabled', !settings.clickEffectEnabled)">
                 <span class="toggle-knob"></span>
@@ -52,7 +89,7 @@ const colorPresets = [
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">拖尾颜色</span>
+                <span class="setting-label">{{ t('settings.trailColor') }}</span>
               </div>
               <div class="color-presets">
                 <button
@@ -61,7 +98,7 @@ const colorPresets = [
                   class="color-dot"
                   :style="{ background: `rgb(${c.value})` }"
                   :class="{ active: settings.trailColor === c.value }"
-                  :title="c.label"
+                  :title="t('colorPresets.' + c.labelKey)"
                   @click="updateSetting('trailColor', c.value)"
                 ></button>
               </div>
@@ -69,7 +106,7 @@ const colorPresets = [
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">拖尾大小</span>
+                <span class="setting-label">{{ t('settings.trailSize') }}</span>
               </div>
               <div class="slider-row">
                 <input type="range" class="slider" min="0.5" max="3" step="0.1" :value="settings.trailScale" @input="updateSetting('trailScale', parseFloat($event.target.value))" />
@@ -80,12 +117,12 @@ const colorPresets = [
 
           <!-- 界面设置 -->
           <div class="setting-group">
-            <div class="group-title">界面</div>
+            <div class="group-title">{{ t('settings.interface') }}</div>
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">卡片光晕</span>
-                <span class="setting-desc">悬停卡片时的蓝色光晕</span>
+                <span class="setting-label">{{ t('settings.cardGlow') }}</span>
+                <span class="setting-desc">{{ t('settings.cardGlowDesc') }}</span>
               </div>
               <button class="toggle" :class="{ on: settings.cardGlow }" @click="updateSetting('cardGlow', !settings.cardGlow)">
                 <span class="toggle-knob"></span>
@@ -94,7 +131,7 @@ const colorPresets = [
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-label">侧栏透明度</span>
+                <span class="setting-label">{{ t('settings.sidebarOpacity') }}</span>
               </div>
               <div class="slider-row">
                 <input type="range" class="slider" min="0.3" max="1" step="0.05" :value="settings.sidebarOpacity" @input="updateSetting('sidebarOpacity', parseFloat($event.target.value))" />
@@ -106,7 +143,7 @@ const colorPresets = [
           <!-- 恢复默认 -->
           <div class="setting-group">
             <button class="btn btn-ghost reset-btn" @click="resetSettings">
-              恢复默认设置
+              {{ t('settings.reset') }}
             </button>
           </div>
 
@@ -114,8 +151,8 @@ const colorPresets = [
           <div class="setting-group data-notice" style="border-bottom:none;">
             <div class="data-notice-icon">ℹ️</div>
             <div class="data-notice-text">
-              <strong>数据说明</strong>
-              <p>收藏、设置、抽卡记录等数据保存在当前设备的浏览器本地存储中，不同设备之间的数据不会同步。清除浏览器缓存会丢失数据。</p>
+              <strong>{{ t('settings.dataNotice') }}</strong>
+              <p>{{ t('settings.dataNoticeText') }}</p>
             </div>
           </div>
         </div>
@@ -277,6 +314,61 @@ const colorPresets = [
 }
 
 .color-dot.active {
+  border-color: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+/* Language buttons */
+.lang-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-btn {
+  width: 32px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(45, 175, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.lang-btn:hover {
+  background: rgba(45, 175, 255, 0.12);
+  border-color: rgba(45, 175, 255, 0.3);
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, #2dafff, #4dc9f6);
+  border-color: transparent;
+  color: #fff;
+}
+
+/* Theme dots */
+.theme-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-dot:hover {
+  transform: scale(1.2);
+}
+
+.theme-dot.active {
   border-color: #fff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }

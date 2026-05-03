@@ -3,6 +3,7 @@ import { inject } from 'vue'
 
 const showAbout = inject('showAbout')
 const closeAbout = inject('closeAbout')
+const t = inject('t')
 
 const credits = [
   {
@@ -69,37 +70,29 @@ const credits = [
     <div v-if="showAbout" class="about-overlay" @click.self="closeAbout()">
       <div class="about-panel glass">
         <div class="about-header">
-          <h2 class="about-title">关于本站</h2>
+          <h2 class="about-title">{{ t('about.title') }}</h2>
           <button class="close-btn" @click="closeAbout()">✕</button>
         </div>
 
         <div class="about-body">
           <!-- 声明 -->
           <section class="about-section">
-            <h3 class="section-title">关于本站 / About this site</h3>
-            <p class="about-text">
-              本站为<strong>无任何盈利意图、形式和行为</strong>的同人站点，旨在为《蔚蓝档案（又译：碧蓝档案）》的玩家提供<strong>已公开</strong>常用站点的导航与资源整理。
-            </p>
-            <p class="about-text about-en">
-              We are a non-profit, non-commercial fan site for the game <em>"Blue Archive (ブルーアーカイブ)"</em>. We aim to provide players with a curated collection of publicly available community resources and navigation links.
-            </p>
+            <h3 class="section-title">{{ t('about.sectionAbout') }}</h3>
+            <p class="about-text" v-html="t('about.aboutText')"></p>
+            <p class="about-text about-en" v-html="t('about.aboutEn')"></p>
           </section>
 
           <!-- 联系 -->
           <section class="about-section">
-            <h3 class="section-title">联系我们 / Contact</h3>
-            <p class="about-text">
-              如您有任何疑问、意见或建议，或对本站收录的内容存在疑义，欢迎随时联系我们。我们不是官方，无法也不能对游戏内容进行解释和解答。若您有条件体验游戏内容，我们强烈建议您下载游戏并体验。
-            </p>
-            <p class="about-text about-en">
-              If you have any questions, suggestions, or concerns, please feel free to reach out to us. We are not affiliated with Blue Archive in any form, so please be aware that we cannot answer questions regarding any in-game contents. If you have interest, we strongly recommend you download the game and have a try.
-            </p>
+            <h3 class="section-title">{{ t('about.sectionContact') }}</h3>
+            <p class="about-text" v-html="t('about.contactText')"></p>
+            <p class="about-text about-en" v-html="t('about.contactEn')"></p>
           </section>
 
           <!-- 致谢 -->
           <section class="about-section">
-            <h3 class="section-title">致谢 / Credits</h3>
-            <p class="about-text">本站的制作过程中参考或使用了以下开源项目与资源：</p>
+            <h3 class="section-title">{{ t('about.sectionCredits') }}</h3>
+            <p class="about-text">{{ t('about.creditsText') }}</p>
             <div class="credits-grid">
               <a
                 v-for="c in credits"
@@ -120,10 +113,8 @@ const credits = [
 
           <!-- 免责 -->
           <section class="about-section" style="border-bottom: none;">
-            <h3 class="section-title">免责声明 / Disclaimer</h3>
-            <p class="about-text about-small">
-              本站所有内容均来源于网络公开资料，仅用于个人学习与交流。如有侵权相关内容，请及时联系，我们将第一时间予以删除。本站不承担因内容引发的任何法律责任。
-            </p>
+            <h3 class="section-title">{{ t('about.sectionDisclaimer') }}</h3>
+            <p class="about-text about-small">{{ t('about.disclaimerText') }}</p>
           </section>
         </div>
       </div>

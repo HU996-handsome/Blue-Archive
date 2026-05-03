@@ -7,6 +7,7 @@ const closeAuth = inject('closeAuth')
 const onAuthSuccess = inject('onAuthSuccess')
 
 const { signIn, signUp, isConfigured } = useSupabase()
+const t = inject('t')
 
 const mode = ref('login') // 'login' | 'register'
 const email = ref('')
@@ -33,17 +34,17 @@ async function handleSubmit() {
   errorMsg.value = ''
 
   if (!email.value.trim() || !password.value.trim()) {
-    errorMsg.value = '请填写邮箱和密码'
+    errorMsg.value = t('auth.fillAll')
     return
   }
 
   if (mode.value === 'register') {
     if (password.value.length < 6) {
-      errorMsg.value = '密码至少 6 位'
+      errorMsg.value = t('auth.passwordShort')
       return
     }
     if (password.value !== confirmPassword.value) {
-      errorMsg.value = '两次密码不一致'
+      errorMsg.value = t('auth.passwordMismatch')
       return
     }
   }
@@ -55,7 +56,7 @@ async function handleSubmit() {
     localStorage.setItem('ba-remember-me', rememberMe.value ? '1' : '0')
     const result = await signIn(email.value.trim(), password.value)
     if (result.error) {
-      errorMsg.value = result.error === 'Invalid login credentials' ? '邮箱或密码错误' : result.error
+      errorMsg.value = result.error === 'Invalid login credentials' ? t('auth.wrongCredentials') : result.error
       loading.value = false
       return
     }
@@ -71,7 +72,7 @@ async function handleSubmit() {
       return
     }
     if (result.data?.user?.identities?.length === 0) {
-      errorMsg.value = '该邮箱已注册'
+      errorMsg.value = t('auth.alreadyRegistered')
       loading.value = false
       return
     }
@@ -90,18 +91,18 @@ async function handleSubmit() {
     <div v-if="showAuth" class="auth-overlay" @click.self="closeAuth()">
       <div class="auth-panel glass">
         <div class="auth-header">
-          <h2 class="auth-title">{{ mode === 'login' ? '🔑 登录' : '📝 注册' }}</h2>
+          <h2 class="auth-title">{{ mode === 'login' ? '🔑 ' + t('auth.login') : '📝 ' + t('auth.register') }}</h2>
           <button class="close-btn" @click="closeAuth(); resetForm()">✕</button>
         </div>
 
         <div v-if="!isConfigured" class="auth-notice">
-          <p>账号系统尚未配置 Supabase</p>
-          <p class="auth-notice-sub">请在 .env 文件中填入 Supabase 凭据</p>
+          <p>{{ t('auth.notConfigured') }}</p>
+          <p class="auth-notice-sub">{{ t('auth.notConfiguredSub') }}</p>
         </div>
 
         <form v-else class="auth-body" @submit.prevent="handleSubmit">
           <div class="auth-field">
-            <label class="auth-label">邮箱</label>
+            <label class="auth-label">{{ t('auth.email') }}</label>
             <input
               v-model="email"
               type="email"
@@ -112,43 +113,43 @@ async function handleSubmit() {
           </div>
 
           <div class="auth-field">
-            <label class="auth-label">密码</label>
+            <label class="auth-label">{{ t('auth.password') }}</label>
             <input
               v-model="password"
               type="password"
               class="auth-input"
-              placeholder="至少 6 位"
+              :placeholder="t('auth.passwordPlaceholder')"
               autocomplete="current-password"
             />
           </div>
 
           <div v-if="mode === 'register'" class="auth-field">
-            <label class="auth-label">确认密码</label>
+            <label class="auth-label">{{ t('auth.confirmPassword') }}</label>
             <input
               v-model="confirmPassword"
               type="password"
               class="auth-input"
-              placeholder="再输一次密码"
+              :placeholder="t('auth.confirmPlaceholder')"
               autocomplete="new-password"
             />
           </div>
 
           <label v-if="mode === 'login'" class="auth-remember">
             <input type="checkbox" v-model="rememberMe" class="auth-remember-cb" />
-            <span class="auth-remember-label">自动登录</span>
+            <span class="auth-remember-label">{{ t('auth.rememberMe') }}</span>
           </label>
 
           <div v-if="errorMsg" class="auth-error">{{ errorMsg }}</div>
 
           <button type="submit" class="btn auth-submit" :disabled="loading">
-            {{ loading ? '处理中...' : (mode === 'login' ? '登录' : '注册') }}
+            {{ loading ? t('auth.processing') : (mode === 'login' ? t('auth.login') : t('auth.register')) }}
           </button>
 
           <div class="auth-switch">
-            <span v-if="mode === 'login'">没有账号？</span>
-            <span v-else>已有账号？</span>
+            <span v-if="mode === 'login'">{{ t('auth.noAccount') }}</span>
+            <span v-else>{{ t('auth.hasAccount') }}</span>
             <button type="button" class="auth-switch-btn" @click="switchMode">
-              {{ mode === 'login' ? '去注册' : '去登录' }}
+              {{ mode === 'login' ? t('auth.goRegister') : t('auth.goLogin') }}
             </button>
           </div>
         </form>

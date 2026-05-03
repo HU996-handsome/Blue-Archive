@@ -1,6 +1,8 @@
 <script setup>
 import { ref, reactive, computed, provide, watch, onMounted, onUnmounted } from 'vue'
 import { useSupabase } from './composables/useSupabase.js'
+import { useI18n } from './composables/useI18n.js'
+import { useTheme } from './composables/useTheme.js'
 import VideoBg from './components/VideoBg.vue'
 import MouseTrail from './components/MouseTrail.vue'
 import SideBar from './components/SideBar.vue'
@@ -14,6 +16,19 @@ import BirthdayConfetti from './components/BirthdayConfetti.vue'
 import ToolsPanel from './components/ToolsPanel.vue'
 import AuthModal from './components/AuthModal.vue'
 import BouncingArona from './components/BouncingArona.vue'
+import ShortcutOverlay from './components/ShortcutOverlay.vue'
+
+/* ========== i18n ========== */
+const { locale, t, setLocale } = useI18n()
+provide('t', t)
+provide('locale', locale)
+provide('setLocale', setLocale)
+
+/* ========== Theme ========== */
+const { currentTheme, setTheme, getThemes } = useTheme()
+provide('currentTheme', currentTheme)
+provide('setTheme', setTheme)
+provide('getThemes', getThemes)
 
 /* ========== Disclaimer ========== */
 const disclaimerVisible = ref(true)
@@ -73,50 +88,63 @@ provide('needsOnboarding', needsOnboarding)
 provide('onOnboardingComplete', onOnboardingComplete)
 
 /* ========== BA Links ========== */
-const baCategories = [
+const baSiteData = [
   {
-    title: '数据查询 & 图鉴',
+    titleKey: 0,
     icon: '📊',
     links: [
-      { name: 'Schale DB', desc: '学生数据与图鉴查询', url: 'https://schaledb.brightsu.cn/home', icon: '📊' },
-      { name: '蔚蓝档案中文Wiki', desc: 'gamekee 综合资料站', url: 'https://www.gamekee.com/ba', icon: '📖' },
-      { name: '基沃托斯Wiki', desc: 'kivo.wiki 百科全书', url: 'https://kivo.wiki/', icon: '🌐' },
-      { name: '素材一览表', desc: 'game-db 素材数据查询', url: 'https://ba.game-db.tw/', icon: '📦' },
-      { name: '蔚蓝档案工具站', desc: '学生数据与工具集合', url: 'https://ba.brightsu.cn/students', icon: '🔧' },
+      { name: 'Schale DB', descKey: 0, url: 'https://schaledb.brightsu.cn/home', icon: '📊' },
+      { name: '蔚蓝档案中文Wiki', descKey: 1, url: 'https://www.gamekee.com/ba', icon: '📖' },
+      { name: '基沃托斯Wiki', descKey: 2, url: 'https://kivo.wiki/', icon: '🌐' },
+      { name: '素材一览表', descKey: 3, url: 'https://ba.game-db.tw/', icon: '📦' },
+      { name: '蔚蓝档案工具站', descKey: 4, url: 'https://ba.brightsu.cn/students', icon: '🔧' },
     ],
   },
   {
-    title: '实用工具',
+    titleKey: 1,
     icon: '🧮',
     links: [
-      { name: '总力战算分网站', desc: 'BA 总力战分数计算', url: 'https://ba.gc.gg/scorecalc', icon: '🧮' },
-      { name: '什亭之匣', desc: 'arona.icu 综合工具', url: 'https://arona.icu/', icon: '🤖' },
-      { name: '蔚蓝档案资讯攻略', desc: 'blue-utils 资讯与攻略', url: 'https://blue-utils.me/', icon: '📰' },
-      { name: '蔚蓝档案标题生成器', desc: 'BA Logo 在线生成', url: 'https://lab.nulla.top/ba-logo', icon: '🎨' },
-      { name: '蔚蓝档案像素画', desc: 'BA 角色像素头像', url: 'https://www.pixelartcss.com/', icon: '🖼️' },
+      { name: '总力战算分网站', descKey: 5, url: 'https://ba.gc.gg/scorecalc', icon: '🧮' },
+      { name: '什亭之匣', descKey: 6, url: 'https://arona.icu/', icon: '🤖' },
+      { name: '蔚蓝档案资讯攻略', descKey: 7, url: 'https://blue-utils.me/', icon: '📰' },
+      { name: '蔚蓝档案标题生成器', descKey: 8, url: 'https://lab.nulla.top/ba-logo', icon: '🎨' },
+      { name: '蔚蓝档案像素画', descKey: 9, url: 'https://www.pixelartcss.com/', icon: '🖼️' },
     ],
   },
   {
-    title: '剧情 & 社区',
+    titleKey: 2,
     icon: '📜',
     links: [
-      { name: '蔚蓝档案剧情站', desc: '主线剧情在线阅读', url: 'https://blue-archive.io/mainStory', icon: '📜' },
-      { name: '蔚蓝咖啡厅', desc: 'bluearchive.cafe 社区', url: 'https://bluearchive.cafe/', icon: '☕' },
-      { name: '蔚蓝档案国服', desc: 'bluearchive-cn 官网', url: 'https://bluearchive-cn.com/', icon: '🇨🇳' },
-      { name: '日服官网', desc: 'bluearchive.jp (需魔法)', url: 'https://bluearchive.jp/', icon: '🇯🇵' },
-      { name: '蔚蓝档案吧', desc: '百度贴吧蔚蓝档案吧', url: 'https://tieba.baidu.com/f?kw=蔚蓝档案', icon: '💬' },
+      { name: '蔚蓝档案剧情站', descKey: 10, url: 'https://blue-archive.io/mainStory', icon: '📜' },
+      { name: '蔚蓝咖啡厅', descKey: 11, url: 'https://bluearchive.cafe/', icon: '☕' },
+      { name: '蔚蓝档案国服', descKey: 12, url: 'https://bluearchive-cn.com/', icon: '🇨🇳' },
+      { name: '日服官网', descKey: 13, url: 'https://bluearchive.jp/', icon: '🇯🇵' },
+      { name: '蔚蓝档案吧', descKey: 14, url: 'https://tieba.baidu.com/f?kw=蔚蓝档案', icon: '💬' },
     ],
   },
 ]
 
-const allLinks = baCategories.flatMap(c => c.links)
+const baCategories = computed(() =>
+  baSiteData.map((cat, ci) => ({
+    title: t(`sites.categories.${ci}.title`),
+    icon: cat.icon,
+    links: cat.links.map((link, li) => ({
+      name: link.name,
+      desc: t(`sites.links.${link.descKey}.desc`),
+      url: link.url,
+      icon: link.icon,
+    })),
+  }))
+)
+
+const allLinks = computed(() => baCategories.value.flatMap(c => c.links))
 const searchQuery = ref('')
 const activeCategory = ref(null)
 
 const filteredLinks = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return baCategories
-  return baCategories.map(cat => ({
+  if (!q) return baCategories.value
+  return baCategories.value.map(cat => ({
     ...cat,
     links: cat.links.filter(l =>
       l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q)
@@ -126,8 +154,8 @@ const filteredLinks = computed(() => {
 
 const totalResults = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return allLinks.length
-  return allLinks.filter(l =>
+  if (!q) return allLinks.value.length
+  return allLinks.value.filter(l =>
     l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q)
   ).length
 })
@@ -217,6 +245,9 @@ function toggleCharacter() {
   currentCharacter.value = currentCharacter.value === 'arona' ? 'plana' : 'arona'
 }
 
+/* ========== Keyboard Shortcuts ========== */
+const showShortcuts = ref(false)
+
 /* ========== Sidebar (Mobile) ========== */
 const sidebarOpen = ref(false)
 function toggleSidebar() { sidebarOpen.value = !sidebarOpen.value }
@@ -245,7 +276,7 @@ function isFavorite(url) {
 
 const favoriteLinks = computed(() => {
   if (!favorites.value.length) return []
-  return allLinks.filter(l => favorites.value.includes(l.url))
+  return allLinks.value.filter(l => favorites.value.includes(l.url))
 })
 
 provide('favorites', favorites)
@@ -291,13 +322,24 @@ provide('isHotLink', isHotLink)
 
 /* ========== Keyboard Shortcuts ========== */
 function onKeydown(e) {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return
   if (e.key === 'Escape') {
-    if (showAuth.value) closeAuth()
+    if (showShortcuts.value) showShortcuts.value = false
+    else if (showAuth.value) closeAuth()
     else if (showTools.value) closeTools()
     else if (showSettings.value) closeSettings()
     else if (showAbout.value) closeAbout()
     else if (showChangelog.value) closeChangelog()
+  } else if (e.key === 's' || e.key === 'S') {
+    e.preventDefault()
+    searchQuery.value = ''
+    document.querySelector('.search-input')?.focus()
+  } else if (e.key === 't' || e.key === 'T') {
+    e.preventDefault()
+    toggleTools()
+  } else if (e.key === '?') {
+    e.preventDefault()
+    showShortcuts.value = !showShortcuts.value
   }
 }
 
@@ -329,14 +371,14 @@ onUnmounted(() => {
       <div class="disclaimer-card glass-card" :class="{ ready: disclaimerReady }">
         <div class="disclaimer-glow"></div>
         <div class="disclaimer-icon" :class="{ ready: disclaimerReady }">⚠️</div>
-        <h2 class="disclaimer-title" :class="{ ready: disclaimerReady }">免责声明</h2>
+        <h2 class="disclaimer-title" :class="{ ready: disclaimerReady }">{{ t('disclaimer.title') }}</h2>
         <div class="disclaimer-body" :class="{ ready: disclaimerReady }">
-          <p>本网站大部分内容均为网络搜集整理，仅用于个人学习与交流。</p>
-          <p>如有侵权相关内容，请及时联系作者，我们将第一时间予以删除。</p>
-          <p class="disclaimer-note">本站不承担因内容引发的任何法律责任。</p>
+          <p>{{ t('disclaimer.p1') }}</p>
+          <p>{{ t('disclaimer.p2') }}</p>
+          <p class="disclaimer-note">{{ t('disclaimer.p3') }}</p>
         </div>
         <button class="btn disclaimer-btn" :class="{ ready: disclaimerReady }" @click="acceptDisclaimer">
-          我已知晓，进入网站
+          {{ t('disclaimer.btn') }}
         </button>
       </div>
     </div>
@@ -354,17 +396,17 @@ onUnmounted(() => {
       <main class="main-content">
       <div class="main-inner">
         <h1 class="main-title">
-          <span class="title-line">欢迎来到</span>
-          <span class="title-line text-gradient">Blue Archive 资源中转站</span>
+          <span class="title-line">{{ t('main.welcome') }}</span>
+          <span class="title-line text-gradient">{{ t('main.siteName') }}</span>
         </h1>
-        <p class="main-desc" v-if="!searchQuery.trim()">收录蔚蓝档案常用站点，点击即可跳转。</p>
-        <p class="main-desc" v-else>搜索 "{{ searchQuery }}" — 找到 {{ totalResults }} 个结果</p>
+        <p class="main-desc" v-if="!searchQuery.trim()">{{ t('main.desc') }}</p>
+        <p class="main-desc" v-else>{{ t('main.searchResults', { q: searchQuery, n: totalResults }) }}</p>
 
         <!-- Favorites -->
         <div v-if="!searchQuery.trim() && favoriteLinks.length" class="link-category">
           <div class="category-header">
             <span class="category-icon">⭐</span>
-            <span class="category-title">我的收藏</span>
+            <span class="category-title">{{ t('main.favorites') }}</span>
             <span class="category-count">{{ favoriteLinks.length }}</span>
           </div>
           <div class="links-grid">
@@ -382,7 +424,7 @@ onUnmounted(() => {
                 <span class="link-name">{{ link.name }}</span>
                 <span class="link-desc">{{ link.desc }}</span>
               </div>
-              <button class="fav-star active" @click.prevent.stop="toggleFavorite(link.url)" title="取消收藏">★</button>
+              <button class="fav-star active" @click.prevent.stop="toggleFavorite(link.url)" :title="t('main.unfav')">★</button>
               <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
             </a>
           </div>
@@ -392,7 +434,7 @@ onUnmounted(() => {
         <div v-if="!searchQuery.trim() && recentVisits.length && !favoriteLinks.length" class="recent-section">
           <div class="recent-header">
             <span class="recent-icon">🕐</span>
-            <span class="recent-title">最近访问</span>
+            <span class="recent-title">{{ t('main.recent') }}</span>
           </div>
           <div class="recent-list">
             <a
@@ -433,7 +475,7 @@ onUnmounted(() => {
                   </span>
                   <span class="link-desc">{{ link.desc }}</span>
                 </div>
-                <button class="fav-star" :class="{ active: isFavorite(link.url) }" @click.prevent.stop="toggleFavorite(link.url)" :title="isFavorite(link.url) ? '取消收藏' : '收藏'">
+                <button class="fav-star" :class="{ active: isFavorite(link.url) }" @click.prevent.stop="toggleFavorite(link.url)" :title="isFavorite(link.url) ? t('main.unfav') : t('main.fav')">
                   {{ isFavorite(link.url) ? '★' : '☆' }}
                 </button>
                 <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
@@ -443,7 +485,7 @@ onUnmounted(() => {
         </template>
         <div v-else class="no-results">
           <span class="no-results-icon">🔍</span>
-          <span class="no-results-text">未找到 "{{ searchQuery }}" 相关站点</span>
+          <span class="no-results-text">{{ t('main.noResults', { q: searchQuery }) }}</span>
         </div>
 
         <!-- More features -->
@@ -451,8 +493,8 @@ onUnmounted(() => {
           <div class="more-card glass-card">
             <span class="more-icon">🚀</span>
             <div class="more-info">
-              <span class="more-title">更多功能开发中</span>
-              <span class="more-desc">目前还在开发中，老师耐心等待哦~</span>
+              <span class="more-title">{{ t('main.moreTitle') }}</span>
+              <span class="more-desc">{{ t('main.moreDesc') }}</span>
             </div>
             <span class="more-badge">Coming Soon</span>
           </div>
@@ -466,9 +508,9 @@ onUnmounted(() => {
   <div v-if="!disclaimerVisible && !isAuthenticated" class="auth-required-screen">
     <div class="auth-required-card glass-card">
       <div class="auth-required-icon">🔐</div>
-      <h2 class="auth-required-title">请先登录</h2>
-      <p class="auth-required-desc">登录后即可使用本站所有功能，数据将在云端保存</p>
-      <button class="btn auth-required-btn" @click="showAuth = true">登录 / 注册</button>
+      <h2 class="auth-required-title">{{ t('auth.required') }}</h2>
+      <p class="auth-required-desc">{{ t('auth.requiredDesc') }}</p>
+      <button class="btn auth-required-btn" @click="showAuth = true">{{ t('auth.loginRegister') }}</button>
     </div>
   </div>
 
@@ -498,6 +540,9 @@ onUnmounted(() => {
 
   <!-- Bouncing Arona -->
   <BouncingArona v-if="!disclaimerVisible && isAuthenticated" />
+
+  <!-- Keyboard Shortcuts Overlay -->
+  <ShortcutOverlay v-model="showShortcuts" />
 </template>
 
 <style scoped>

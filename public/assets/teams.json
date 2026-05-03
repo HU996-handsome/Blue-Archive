@@ -1,0 +1,63 @@
+{
+  "tags": {
+    "zh": {
+      "boss": "Boss战",
+      "aoe": "群体",
+      "st": "单体",
+      "pierce": "贯穿",
+      "explosion": "爆发",
+      "mystic": "神秘",
+      "sustain": "续航",
+      "speed": "速刷",
+      "pvp": "PvP"
+    },
+    "ja": {
+      "boss": "ボス戦",
+      "aoe": "範囲攻撃",
+      "st": "単体攻撃",
+      "pierce": "貫通",
+      "explosion": "爆発",
+      "mystic": "神秘",
+      "sustain": "持続",
+      "speed": "周回",
+      "pvp": "PvP"
+    }
+  },
+  "teams": [
+    {
+      "id": 1,
+      "name": { "zh": "爆发Boss队", "ja": "爆発ボスPT" },
+      "tags": ["boss", "explosion"],
+      "students": ["日奈", "爱露", "晴奈", "日富美", "花凛", "梓"],
+      "desc": { "zh": "以爆发属性为核心的Boss战队伍", "ja": "爆発属性を核としたボス戦PT" }
+    },
+    {
+      "id": 2,
+      "name": { "zh": "贯穿Boss队", "ja": "貫通ボスPT" },
+      "tags": ["boss", "pierce"],
+      "students": ["伊织", "星野", "白子", "野宫", "响", "纱绫"],
+      "desc": { "zh": "贯穿属性高输出Boss队伍", "ja": "貫通属性の高火力ボス戦PT" }
+    },
+    {
+      "id": 3,
+      "name": { "zh": "神秘Boss队", "ja": "神秘ボスPT" },
+      "tags": ["boss", "mystic"],
+      "students": ["爱丽丝", "绿", "泉奈", "月咏", "忧", "诺亚"],
+      "desc": { "zh": "神秘属性Boss战专用队伍", "ja": "神秘属性ボス戦専用PT" }
+    },
+    {
+      "id": 4,
+      "name": { "zh": "日常速刷队", "ja": "日常周回PT" },
+      "tags": ["speed", "aoe"],
+      "students": ["日奈", "爱露", "晴奈", "响", "花凛", "梓"],
+      "desc": { "zh": "快速清理日常关卡的通用队伍", "ja": "日常クエストを高速周回する汎用PT" }
+    },
+    {
+      "id": 5,
+      "name": { "zh": "PvP竞技队", "ja": "PvP対戦PT" },
+      "tags": ["pvp"],
+      "students": ["宫子", "咲", "日奈", "梓", "花凛", "响"],
+      "desc": { "zh": "适合竞技场对战的队伍配置", "ja": "アリーナ対戦向けのPT構成" }
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, inject } from 'vue'
+
+const t = inject('t')
 
 const events = ref([])
 const now = ref(Date.now())
@@ -7,10 +9,10 @@ let timer = null
 
 // approximate BA event schedule (updated periodically)
 const eventList = [
-  { name: '总力战', icon: '⚔️', cycle: 14, offset: 0 },
-  { name: '大决战', icon: '🔥', cycle: 28, offset: 7 },
-  { name: '联合演习', icon: '🛡️', cycle: 21, offset: 3 },
-  { name: '活动剧情', icon: '📖', cycle: 14, offset: 10 },
+  { nameKey: 'tools.raid', icon: '⚔️', cycle: 14, offset: 0 },
+  { nameKey: 'tools.grandAssault', icon: '🔥', cycle: 28, offset: 7 },
+  { nameKey: 'tools.jointExercise', icon: '🛡️', cycle: 21, offset: 3 },
+  { nameKey: 'tools.eventStory', icon: '📖', cycle: 14, offset: 10 },
 ]
 
 function getNextEventDate(cycleDays, offsetDays) {
@@ -35,6 +37,7 @@ function updateEvents() {
     const mins = Math.floor((diff % 3600000) / 60000)
     return {
       ...e,
+      name: t(e.nameKey),
       nextDate,
       days, hours, mins,
       isToday: days === 0 && hours < 12,
@@ -54,19 +57,19 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
   <div class="countdown-section glass-card">
     <div class="countdown-header">
       <span class="countdown-icon">⏰</span>
-      <span class="countdown-title">活动倒计时</span>
+      <span class="countdown-title">{{ t('tools.eventCountdown') }}</span>
     </div>
     <div class="countdown-list">
       <div v-for="e in events" :key="e.name" class="countdown-item" :class="{ today: e.isToday }">
         <span class="countdown-item-icon">{{ e.icon }}</span>
         <span class="countdown-item-name">{{ e.name }}</span>
-        <span v-if="e.isToday" class="countdown-badge">今日</span>
+        <span v-if="e.isToday" class="countdown-badge">{{ t('tools.today') }}</span>
         <span v-else class="countdown-time">
-          <template v-if="e.days > 0">{{ e.days }}天</template>{{ e.hours }}时{{ e.mins }}分
+          <template v-if="e.days > 0">{{ e.days }}{{ t('tools.days') }}</template>{{ e.hours }}{{ t('tools.hours') }}{{ e.mins }}{{ t('tools.mins') }}
         </span>
       </div>
     </div>
-    <div class="countdown-note">* 基于周期推算，仅供参考</div>
+    <div class="countdown-note">{{ t('tools.countdownNote') }}</div>
   </div>
 </template>
 

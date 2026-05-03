@@ -9,6 +9,7 @@ const guideRestart = inject('guideRestart')
 const user = inject('user')
 const needsOnboarding = inject('needsOnboarding')
 const onOnboardingComplete = inject('onOnboardingComplete')
+const t = inject('t')
 
 // Per-user storage key
 const STORAGE_KEY = computed(() => {
@@ -16,70 +17,30 @@ const STORAGE_KEY = computed(() => {
   return uid ? `ba-onboarding-done-${uid}` : 'ba-onboarding-done-guest'
 })
 
+const stepTargets = [
+  { target: '.sidebar-logo', pos: 'right' },
+  { target: '.avatar-section', pos: 'right' },
+  { target: '.clock-display', pos: 'right' },
+  { target: '.weather-section', pos: 'right' },
+  { target: '.birthday-section', pos: 'right' },
+  { target: '.topbar-search', pos: 'bottom' },
+  { target: '.link-category', pos: 'left' },
+  { target: '.topbar-menu', pos: 'bottom' },
+  { target: '.char-toggle', pos: 'right' },
+]
+
+const steps = computed(() => {
+  const texts = t('guide.steps')
+  return stepTargets.map((st, i) => ({ ...st, ...(texts[i] || {}) }))
+})
+
 const visibleSteps = computed(() => {
   if (typeof window !== 'undefined' && window.innerWidth <= 900) {
     const sidebarTargets = ['.sidebar-logo', '.avatar-section', '.clock-display', '.weather-section', '.birthday-section']
-    return steps.filter(s => !sidebarTargets.includes(s.target))
+    return steps.value.filter(s => !sidebarTargets.includes(s.target))
   }
-  return steps
+  return steps.value
 })
-
-const steps = [
-  {
-    target: '.sidebar-logo',
-    title: '各位老师，欢迎来到中转站！',
-    desc: '这里是 Blue Archive 资源中转站，一个为蔚蓝档案玩家打造的常用站点导航页。背景视频来自 bluearchive.cafe 开源项目，logo 使用了 BA 经典风格渲染。接下来带各位老师快速了解一下本站的功能~',
-    pos: 'right',
-  },
-  {
-    target: '.avatar-section',
-    title: '阿罗娜 & 音乐',
-    desc: '这里是阿罗娜的头像区域。下方是音乐播放器，收录了多首蔚蓝档案经典原声，支持上下首切换、进度拖拽和音量调节~',
-    pos: 'right',
-  },
-  {
-    target: '.clock-display',
-    title: '时间 & 停留时长',
-    desc: '实时显示当前时间与日期。下方还会记录你在中转站停留了多久，看看谁待得最久！',
-    pos: 'right',
-  },
-  {
-    target: '.weather-section',
-    title: '实时天气',
-    desc: '允许浏览器定位权限后，这里会显示实时天气信息，包括温度、体感、湿度和风速。数据来自 Open-Meteo，完全免费且无需注册。',
-    pos: 'right',
-  },
-  {
-    target: '.birthday-section',
-    title: '学生生日日历',
-    desc: '收录了 194 位学生的生日数据。每天会显示今天过生日的学生（金色高亮），以及未来 30 天内的生日倒计时。搜索框可以查询任意学生的生日，不要忘了给学生过生日哦~',
-    pos: 'right',
-  },
-  {
-    target: '.topbar-search',
-    title: '搜索站点',
-    desc: '在顶部搜索栏输入关键词即可快速过滤网站卡片。比如搜「蔚蓝」会显示所有相关站点，搜「wiki」能找到 Wiki 类站点。支持按名称和描述模糊搜索~',
-    pos: 'bottom',
-  },
-  {
-    target: '.link-category',
-    title: '分类资源站点',
-    desc: '主页收录了 15 个蔚蓝档案常用站点，分为「数据查询 & 图鉴」「实用工具」「剧情 & 社区」三大类。鼠标悬停有弹跳效果，点击即可跳转。下方还有更多功能开发中，敬请期待~',
-    pos: 'left',
-  },
-  {
-    target: '.topbar-menu',
-    title: '菜单导航',
-    desc: '顶部菜单栏包含首页、小工具、公告、设置、关于和彩蛋。小工具里有抽卡模拟器、生日日历等趣味功能；公告查看更新日志；设置中可调节鼠标拖尾、卡片光晕、侧栏透明度等；关于页面有声明和致谢；彩蛋有惊喜哦~',
-    pos: 'bottom',
-  },
-  {
-    target: '.char-toggle',
-    title: '角色切换',
-    desc: '点击这个小按钮可以在阿罗娜（☀️）和普拉娜（🌙）之间切换，两个角色都有各自的语音和互动哦~',
-    pos: 'right',
-  },
-]
 
 function updatePosition() {
   const step = visibleSteps.value[currentStep.value]
@@ -195,10 +156,10 @@ watch(needsOnboarding, (val) => {
           <h3 class="guide-title">{{ visibleSteps[currentStep].title }}</h3>
           <p class="guide-desc">{{ visibleSteps[currentStep].desc }}</p>
           <div class="guide-actions">
-            <button class="btn guide-skip" @click="skip">跳过</button>
-            <button class="btn guide-prev" v-if="currentStep > 0" @click="prev">上一步</button>
+            <button class="btn guide-skip" @click="skip">{{ t('guide.skip') }}</button>
+            <button class="btn guide-prev" v-if="currentStep > 0" @click="prev">{{ t('guide.prev') }}</button>
             <button class="btn guide-next" @click="next">
-              {{ currentStep < visibleSteps.length - 1 ? '下一步' : '开始探索' }}
+              {{ currentStep < visibleSteps.length - 1 ? t('guide.next') : t('guide.start') }}
             </button>
           </div>
           <!-- arrow -->

@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted, inject, computed, nextTick } from 'vue'
 import BALogo from './BALogo.vue'
 
 const settings = inject('settings')
+const t = inject('t')
+const locale = inject('locale')
 
 /* ========== Music ========== */
 const playlist = [
@@ -143,14 +145,13 @@ const date = ref('')
 const weekday = ref('')
 const stayDuration = ref('00:00:00')
 let timer
-const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
 const startTime = Date.now()
 
 function updateClock() {
   const now = new Date()
   time.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
   date.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  weekday.value = weekdays[now.getDay()]
+  weekday.value = t(`weekdayNames.${now.getDay()}`)
 
   const elapsed = Math.floor((Date.now() - startTime) / 1000)
   const h = String(Math.floor(elapsed / 3600)).padStart(2, '0')
@@ -198,12 +199,12 @@ async function fetchWeather(lat, lon) {
         desc, icon: weatherIcons[desc] || '🌤️',
       }
     }
-  } catch { weatherError.value = '获取天气失败' }
+  } catch { weatherError.value = t('sidebar.weatherFail') }
   finally { weatherLoading.value = false }
 }
 
 function requestLocation() {
-  if (!navigator.geolocation) { weatherError.value = '浏览器不支持定位'; return }
+  if (!navigator.geolocation) { weatherError.value = t('sidebar.geoUnsupported'); return }
   weatherLoading.value = true
   navigator.geolocation.getCurrentPosition(
     (pos) => {
@@ -211,8 +212,8 @@ function requestLocation() {
     },
     (err) => {
       weatherLoading.value = false
-      if (err.code === 1) { permissionDenied.value = true; weatherError.value = '定位权限被拒绝' }
-      else weatherError.value = '获取位置失败'
+      if (err.code === 1) { permissionDenied.value = true; weatherError.value = t('sidebar.geoDenied') }
+      else weatherError.value = t('sidebar.geoFail')
     }
   )
 }
@@ -224,22 +225,23 @@ const allStudents = ref([])
 const birthdaySearch = ref('')
 const showBirthdaySearch = ref(false)
 
-const schoolNames = {
-  Abydos: '阿拜多斯', Gehenna: '歌赫娜', Trinity: '三一', Millennium: '千年',
-  Hyakkiyako: '百鬼夜行', Shanhaijing: '山海经', RedWinter: '红冬', Valkyrie: '瓦尔基里',
-  SRT: 'SRT', Arius: '阿里乌斯', ETC: '其他',
-}
+const schoolNames = computed(() => ({
+  Abydos: t('schoolNames.Abydos'), Gehenna: t('schoolNames.Gehenna'), Trinity: t('schoolNames.Trinity'), Millennium: t('schoolNames.Millennium'),
+  Hyakkiyako: t('schoolNames.Hyakkiyako'), Shanhaijing: t('schoolNames.Shanhaijing'), RedWinter: t('schoolNames.RedWinter'), Valkyrie: t('schoolNames.Valkyrie'),
+  SRT: 'SRT', Arius: t('schoolNames.Arius'), ETC: t('schoolNames.ETC'),
+}))
 
 const searchedStudents = computed(() => {
   const q = birthdaySearch.value.trim().toLowerCase()
   if (!q) return []
   return allStudents.value.filter(s =>
-    s.name.toLowerCase().includes(q) || (schoolNames[s.school] || '').includes(q)
+    s.name.toLowerCase().includes(q) || (schoolNames.value[s.school] || '').includes(q)
   ).slice(0, 8)
 })
 
 function formatBd(bd) {
   const parts = bd.split('/')
+  if (locale.value === 'ja') return `${parts[0]}月${parts[1]}日`
   return `${parts[0]}月${parts[1]}日`
 }
 
@@ -258,7 +260,7 @@ async function loadBirthdays() {
       const d = new Date(now)
       d.setDate(d.getDate() + i)
       const key = `${d.getMonth() + 1}/${d.getDate()}`
-      data.filter(s => s.bd === key).forEach(s => upcoming.push({ ...s, daysLeft: i, dateStr: `${d.getMonth() + 1}月${d.getDate()}日` }))
+      data.filter(s => s.bd === key).forEach(s => upcoming.push({ ...s, daysLeft: i, dateStr: locale.value === 'ja' ? `${d.getMonth() + 1}月${d.getDate()}日` : `${d.getMonth() + 1}月${d.getDate()}日` }))
     }
     upcomingBirthdays.value = upcoming.slice(0, 5)
   } catch (e) {
@@ -303,17 +305,17 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
         <div class="music-bar-fill" :style="{ width: bgmDuration ? (bgmProgress / bgmDuration * 100) + '%' : '0%' }"></div>
       </div>
       <div class="music-controls">
-        <button class="music-btn" @click="prevTrack" title="上一首">
+        <button class="music-btn" @click="prevTrack" :title="t('sidebar.prevTrack')">
           <span class="material-symbols-outlined">skip_previous</span>
         </button>
         <button class="music-btn music-btn-play" @click="toggleBgm">
           <span class="material-symbols-outlined">{{ isPlaying ? 'pause' : 'play_arrow' }}</span>
         </button>
-        <button class="music-btn" @click="nextTrack" title="下一首">
+        <button class="music-btn" @click="nextTrack" :title="t('sidebar.nextTrack')">
           <span class="material-symbols-outlined">skip_next</span>
         </button>
         <div class="music-volume" ref="volumeRef">
-          <button class="music-btn music-btn-vol" @click.stop="showVolume = !showVolume" :title="isMuted ? '取消静音' : '静音'">
+          <button class="music-btn music-btn-vol" @click.stop="showVolume = !showVolume" :title="isMuted ? t('sidebar.unmute') : t('sidebar.mute')">
             <span class="material-symbols-outlined">{{ isMuted || bgmVolume === 0 ? 'volume_off' : bgmVolume < 0.5 ? 'volume_down' : 'volume_up' }}</span>
           </button>
           <div v-if="showVolume" class="volume-popup" @click.stop>
@@ -321,7 +323,7 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
             <span class="volume-val">{{ Math.round((isMuted ? 0 : bgmVolume) * 100) }}%</span>
           </div>
         </div>
-        <button class="music-btn music-btn-list" @click="showPlaylist = !showPlaylist" title="播放列表">
+        <button class="music-btn music-btn-list" @click="showPlaylist = !showPlaylist" :title="t('sidebar.playlist')">
           <span class="material-symbols-outlined">queue_music</span>
         </button>
       </div>
@@ -353,13 +355,13 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
         <span class="clock-dot">·</span>
         <span>{{ weekday }}</span>
       </div>
-      <div class="clock-stay">在中转站停留时间：{{ stayDuration }}</div>
+      <div class="clock-stay">{{ t('sidebar.stayTime') }}{{ stayDuration }}</div>
     </div>
 
     <!-- Weather -->
     <div class="sidebar-section weather-section">
       <div v-if="weatherLoading" class="weather-loading">
-        <div class="spinner"></div><span>获取天气中...</span>
+        <div class="spinner"></div><span>{{ t('sidebar.weatherLoading') }}</span>
       </div>
       <div v-else-if="weather" class="weather-info">
         <div class="weather-row">
@@ -373,29 +375,29 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
         </div>
       </div>
       <div v-else class="weather-error">
-        <span>{{ weatherError || '无法获取天气' }}</span>
-        <button class="btn-text" @click="requestLocation">{{ permissionDenied ? '重新授权' : '重试' }}</button>
+        <span>{{ weatherError || t('sidebar.weatherUnavailable') }}</span>
+        <button class="btn-text" @click="requestLocation">{{ permissionDenied ? t('sidebar.reauth') : t('sidebar.retry') }}</button>
       </div>
     </div>
 
     <!-- Birthday -->
     <div class="sidebar-section birthday-section">
-      <div class="birthday-title">🎂 学生日历</div>
+      <div class="birthday-title">🎂 {{ t('sidebar.birthdayCalendar') }}</div>
       <div v-if="todayBirthdays.length" class="birthday-today">
-        <div class="birthday-badge">今天生日</div>
+        <div class="birthday-badge">{{ t('sidebar.todayBirthday') }}</div>
         <div v-for="s in todayBirthdays" :key="s.name" class="birthday-item today">
           <span class="birthday-name">{{ s.name }}</span>
-          <span class="birthday-school">{{ schoolNames[s.school] || s.school }}</span>
+          <span class="birthday-school">{{ schoolNames.value[s.school] || s.school }}</span>
         </div>
       </div>
       <div v-if="upcomingBirthdays.length" class="birthday-upcoming">
         <div v-for="s in upcomingBirthdays" :key="s.name+s.bd" class="birthday-item">
           <span class="birthday-name">{{ s.name }}</span>
-          <span class="birthday-date">{{ s.dateStr }}（{{ s.daysLeft }}天后）</span>
+          <span class="birthday-date">{{ s.dateStr }}（{{ t('sidebar.daysLater', { n: s.daysLeft }) }}）</span>
         </div>
       </div>
       <div v-if="!todayBirthdays.length && !upcomingBirthdays.length" class="birthday-empty">
-        加载中...
+        {{ t('sidebar.loading') }}
       </div>
       <!-- Search -->
       <div class="birthday-search">
@@ -404,7 +406,7 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
           <input
             v-model="birthdaySearch"
             class="birthday-search-input"
-            placeholder="搜索学生生日..."
+            :placeholder="t('sidebar.searchBirthday')"
             @focus="showBirthdaySearch = true"
           />
         </div>
@@ -412,13 +414,13 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
           <div v-for="s in searchedStudents" :key="s.name+s.bd" class="birthday-result-item">
             <div class="birthday-result-info">
               <span class="birthday-result-name">{{ s.name }}</span>
-              <span class="birthday-result-school">{{ schoolNames[s.school] || s.school }}</span>
+              <span class="birthday-result-school">{{ schoolNames.value[s.school] || s.school }}</span>
             </div>
             <span class="birthday-result-date">{{ formatBd(s.bd) }}</span>
           </div>
         </div>
         <div v-if="showBirthdaySearch && birthdaySearch.trim() && !searchedStudents.length" class="birthday-no-result">
-          未找到匹配的学生
+          {{ t('sidebar.noMatch') }}
         </div>
       </div>
     </div>

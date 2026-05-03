@@ -1,0 +1,28 @@
+{
+  "gifts": [
+    { "id": 1, "name": { "zh": "巧克力蛋糕", "ja": "チョコレートケーキ" }, "rarity": 3, "image": "🍫" },
+    { "id": 2, "name": { "zh": "毛绒玩偶", "ja": "ぬいぐるみ" }, "rarity": 3, "image": "🧸" },
+    { "id": 3, "name": { "zh": "花束", "ja": "花束" }, "rarity": 3, "image": "💐" },
+    { "id": 4, "name": { "zh": "游戏机", "ja": "ゲーム機" }, "rarity": 3, "image": "🎮" },
+    { "id": 5, "name": { "zh": "书", "ja": "本" }, "rarity": 2, "image": "📚" },
+    { "id": 6, "name": { "zh": "手制饼干", "ja": "手作りクッキー" }, "rarity": 2, "image": "🍪" },
+    { "id": 7, "name": { "zh": "围巾", "ja": "マフラー" }, "rarity": 2, "image": "🧣" },
+    { "id": 8, "name": { "zh": "相框", "ja": "フォトフレーム" }, "rarity": 2, "image": "🖼️" },
+    { "id": 9, "name": { "zh": "糖果", "ja": "キャンディ" }, "rarity": 1, "image": "🍬" },
+    { "id": 10, "name": { "zh": "饮料", "ja": "ドリンク" }, "rarity": 1, "image": "🥤" },
+    { "id": 11, "name": { "zh": "笔记本", "ja": "ノート" }, "rarity": 1, "image": "📓" },
+    { "id": 12, "name": { "zh": "钥匙扣", "ja": "キーホルダー" }, "rarity": 1, "image": "🔑" }
+  ],
+  "preferences": {
+    "Gehenna": { "loved": [1, 4], "liked": [2, 6], "disliked": [11] },
+    "Trinity": { "loved": [3, 5], "liked": [7, 8], "disliked": [9] },
+    "Millennium": { "loved": [4, 5], "liked": [1, 8], "disliked": [10] },
+    "Abydos": { "loved": [1, 6], "liked": [2, 7], "disliked": [12] },
+    "Shanhaijing": { "loved": [3, 5], "liked": [6, 8], "disliked": [4] },
+    "Hyakkiyako": { "loved": [2, 3], "liked": [7, 9], "disliked": [11] },
+    "RedWinter": { "loved": [7, 1], "liked": [5, 6], "disliked": [10] },
+    "SRT": { "loved": [4, 8], "liked": [1, 7], "disliked": [9] },
+    "Arius": { "loved": [1, 4], "liked": [2, 6], "disliked": [3] },
+    "Valkyrie": { "loved": [5, 8], "liked": [3, 7], "disliked": [12] }
+  }
+}

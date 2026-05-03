@@ -1,5 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
+import { useSchoolColors } from '../composables/useSchoolColors.js'
+
+const t = inject('t')
+const { getSchoolColor } = useSchoolColors()
 
 const emit = defineEmits(['pull'])
 
@@ -79,35 +83,28 @@ async function pullTen() {
 function getStars(n) {
   return '★'.repeat(n)
 }
-
-const schoolColors = {
-  Gehenna: '#ff6b6b', Trinity: '#74b9ff', Millennium: '#a29bfe',
-  Abydos: '#ffeaa7', Shanhaijing: '#55efc4', Hyakkiyako: '#fd79a8',
-  RedWinter: '#dfe6e9', SRT: '#00cec9', Arius: '#636e72',
-  Valkyrie: '#e17055',
-}
 </script>
 
 <template>
   <div class="gacha-section glass-card">
     <div class="gacha-header">
       <span class="gacha-icon">🎰</span>
-      <span class="gacha-title">抽卡模拟器</span>
-      <span class="gacha-pity">保底: {{ pityCount }}/{{ 200 }}</span>
+      <span class="gacha-title">{{ t('tools.gacha') }}</span>
+      <span class="gacha-pity">{{ t('tools.pity', { n: pityCount }) }}</span>
     </div>
     <div class="gacha-info">
       <span>3★: 3% | 2★: 18% | 1★: 79%</span>
-      <span v-if="pullCount > 0">已抽 {{ pullCount }} 次</span>
+      <span v-if="pullCount > 0">{{ t('tools.pulled', { n: pullCount }) }}</span>
     </div>
     <button class="btn gacha-btn" :class="{ pulling: isPulling }" @click="pullTen" :disabled="isPulling">
-      {{ isPulling ? '抽取中...' : '✦ 十连抽卡 ✦' }}
+      {{ isPulling ? t('tools.pulling') : t('tools.pullTen') }}
     </button>
     <Transition name="results-pop">
       <div v-if="showResults && results.length" class="gacha-results">
         <div v-for="(s, i) in results" :key="i" class="gacha-card" :class="'star-' + s.star">
           <div class="gacha-card-stars" :class="'stars-' + s.star">{{ getStars(s.star) }}</div>
           <div class="gacha-card-name">{{ s.name }}</div>
-          <div class="gacha-card-school" :style="{ color: schoolColors[s.school] || '#2dafff' }">{{ s.school }}</div>
+          <div class="gacha-card-school" :style="{ color: getSchoolColor(s.school) }">{{ t('schoolNames.' + s.school) || s.school }}</div>
         </div>
       </div>
     </Transition>

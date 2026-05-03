@@ -1,7 +1,18 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import bgVideo from '../assets/background.mp4'
 
-const videoSrc = bgVideo
+const videoSrc = ref(bgVideo)
+
+// Support for multiple videos: add .mp4 files to public/videos/ folder
+const publicVideos = []
+try {
+  // If multiple videos exist in public/videos/, randomly pick one
+  if (publicVideos.length > 0) {
+    const idx = Math.floor(Math.random() * publicVideos.length)
+    videoSrc.value = publicVideos[idx]
+  }
+} catch {}
 </script>
 
 <template>

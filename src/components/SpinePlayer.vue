@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
 
 const props = defineProps({
   character: { type: String, default: 'arona' },
 })
+
+const t = inject('t')
+const locale = inject('locale')
 
 const emit = defineEmits(['toggle'])
 
@@ -23,7 +26,9 @@ let startLeft = 0
 let startBottom = 0
 let dragMoved = false
 
-const assets = {
+const assets = computed(() => {
+  const lang = locale.value === 'ja' ? 'jp' : 'zh'
+  return {
   arona: {
     skel: '/spine_assets/arona/arona_spr.skel',
     atlas: '/spine_assets/arona/arona_spr.atlas',
@@ -35,12 +40,12 @@ const assets = {
     headB: 'Head_Back',
     eyeAngle: 76.307,
     voices: [
-      { audio: '/spine_assets/arona/audio/zh/arona_01.ogg', anim: '12', text: '您回来了？我等您很久啦！' },
-      { audio: '/spine_assets/arona/audio/zh/arona_02.ogg', anim: '03', text: '嗯，不错，今天也是个好天气。' },
-      { audio: '/spine_assets/arona/audio/zh/arona_03.ogg', anim: '02', text: '天空真是广啊……另一边会有些什么呢？' },
-      { audio: '/spine_assets/arona/audio/zh/arona_04.ogg', anim: '18', text: '偶尔也要为自己的健康着想啊，老师，我会很担心的。' },
-      { audio: '/spine_assets/arona/audio/zh/arona_05.ogg', anim: '25', text: '来，加油吧，老师！' },
-      { audio: '/spine_assets/arona/audio/zh/arona_06.ogg', anim: '11', text: '今天又会有什么事情在等着我呢？' },
+      { audio: `/spine_assets/arona/audio/${lang}/arona_01.ogg`, anim: '12', text: t('aronaVoices.0') },
+      { audio: `/spine_assets/arona/audio/${lang}/arona_02.ogg`, anim: '03', text: t('aronaVoices.1') },
+      { audio: `/spine_assets/arona/audio/${lang}/arona_03.ogg`, anim: '02', text: t('aronaVoices.2') },
+      { audio: `/spine_assets/arona/audio/${lang}/arona_04.ogg`, anim: '18', text: t('aronaVoices.3') },
+      { audio: `/spine_assets/arona/audio/${lang}/arona_05.ogg`, anim: '25', text: t('aronaVoices.4') },
+      { audio: `/spine_assets/arona/audio/${lang}/arona_06.ogg`, anim: '11', text: t('aronaVoices.5') },
     ],
   },
   plana: {
@@ -54,14 +59,14 @@ const assets = {
     headB: 'Head_Back',
     eyeAngle: 97.331,
     voices: [
-      { audio: '/spine_assets/plana/audio/zh/plana_01.ogg', anim: '13', text: '混乱，该行动无法理解。请不要戳我，会出现故障。' },
-      { audio: '/spine_assets/plana/audio/zh/plana_02.ogg', anim: '06', text: '我明白了，老师现在无事可做，很无聊。' },
-      { audio: '/spine_assets/plana/audio/zh/plana_03.ogg', anim: '15', text: '确认连接。' },
-      { audio: '/spine_assets/plana/audio/zh/plana_04.ogg', anim: '99', text: '正在待命，需要解决的任务还有很多。' },
-      { audio: '/spine_assets/plana/audio/zh/plana_05.ogg', anim: '17', text: '等您很久了。' },
+      { audio: `/spine_assets/plana/audio/${lang}/plana_01.ogg`, anim: '13', text: t('planaVoices.0') },
+      { audio: `/spine_assets/plana/audio/${lang}/plana_02.ogg`, anim: '06', text: t('planaVoices.1') },
+      { audio: `/spine_assets/plana/audio/${lang}/plana_03.ogg`, anim: '15', text: t('planaVoices.2') },
+      { audio: `/spine_assets/plana/audio/${lang}/plana_04.ogg`, anim: '99', text: t('planaVoices.3') },
+      { audio: `/spine_assets/plana/audio/${lang}/plana_05.ogg`, anim: '17', text: t('planaVoices.4') },
     ],
   },
-}
+}})
 
 let player = null
 let animState = null
@@ -72,7 +77,7 @@ let audioCtx = null
 let moveHandler = null
 
 function getCfg() {
-  return assets[props.character]
+  return assets.value[props.character]
 }
 
 function rotateVec(x, y, angle) {

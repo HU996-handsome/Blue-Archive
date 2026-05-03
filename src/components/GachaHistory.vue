@@ -1,16 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
+import { useSchoolColors } from '../composables/useSchoolColors.js'
+
+const t = inject('t')
+const { getSchoolColor } = useSchoolColors()
 
 const STORAGE_KEY = 'ba-gacha-history'
 const history = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'))
 const expanded = ref(false)
-
-const schoolColors = {
-  Gehenna: '#ff6b6b', Trinity: '#74b9ff', Millennium: '#a29bfe',
-  Abydos: '#ffeaa7', Shanhaijing: '#55efc4', Hyakkiyako: '#fd79a8',
-  RedWinter: '#dfe6e9', SRT: '#00cec9', Arius: '#636e72',
-  Valkyrie: '#e17055',
-}
 
 function addEntry(results) {
   const entry = {
@@ -45,17 +42,17 @@ defineExpose({ addEntry })
   <div class="gh-section glass-card" v-if="history.length">
     <div class="gh-header" @click="expanded = !expanded">
       <span class="gh-icon">📜</span>
-      <span class="gh-title">抽卡记录</span>
-      <span class="gh-count">{{ history.length }}次</span>
+      <span class="gh-title">{{ t('tools.gachaHistory') }}</span>
+      <span class="gh-count">{{ t('tools.pulls', { n: history.length }) }}</span>
       <span class="gh-expand">{{ expanded ? '▲' : '▼' }}</span>
     </div>
     <Transition name="gh-expand">
       <div v-if="expanded" class="gh-body">
         <div class="gh-stats">
-          <span class="gh-stat">共 {{ history.length * 10 }} 抽</span>
+          <span class="gh-stat">{{ t('tools.totalPulls', { n: history.length * 10 }) }}</span>
           <span class="gh-stat star3">3★: {{ history.reduce((s, h) => s + getStarCount(h.students, 3), 0) }}</span>
           <span class="gh-stat star2">2★: {{ history.reduce((s, h) => s + getStarCount(h.students, 2), 0) }}</span>
-          <button class="gh-clear" @click.stop="clearHistory">清空</button>
+          <button class="gh-clear" @click.stop="clearHistory">{{ t('tools.clear') }}</button>
         </div>
         <div class="gh-list">
           <div v-for="(entry, i) in history.slice(0, 20)" :key="i" class="gh-entry">
@@ -66,7 +63,7 @@ defineExpose({ addEntry })
                 :key="j"
                 class="gh-card"
                 :class="'star-' + s.star"
-                :title="s.name + ' (' + s.school + ')'"
+                :title="s.name + ' (' + (t('schoolNames.' + s.school) || s.school) + ')'"
               >{{ s.name }}</span>
             </div>
           </div>

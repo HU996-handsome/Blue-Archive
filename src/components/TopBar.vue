@@ -16,14 +16,15 @@ const user = inject('user')
 const isAuthenticated = inject('isAuthenticated')
 const toggleAuth = inject('toggleAuth')
 const handleLogout = inject('handleLogout')
+const t = inject('t')
 
 const menuItems = [
-  { label: '首页', id: 'home' },
-  { label: '小工具', id: 'tools' },
-  { label: '公告', id: 'changelog' },
-  { label: '设置', id: 'settings' },
-  { label: '关于', id: 'about' },
-  { label: '彩蛋', id: 'easter' },
+  { labelKey: 'nav.home', id: 'home' },
+  { labelKey: 'nav.tools', id: 'tools' },
+  { labelKey: 'nav.changelog', id: 'changelog' },
+  { labelKey: 'nav.settings', id: 'settings' },
+  { labelKey: 'nav.about', id: 'about' },
+  { labelKey: 'nav.easter', id: 'easter' },
 ]
 
 const itemIcons = {
@@ -67,23 +68,23 @@ function handleClick(item) {
             class="topbar-link"
             :class="{ active: isActive(item) }"
             @click.prevent="handleClick(item)"
-          >{{ item.label }}</a>
+          >{{ t(item.labelKey) }}</a>
         </li>
       </ul>
       <div class="topbar-search">
         <span class="material-symbols-outlined topbar-search-icon">search</span>
-        <input v-model="searchQuery" class="topbar-search-input" placeholder="搜索站点..." />
+        <input v-model="searchQuery" class="topbar-search-input" :placeholder="t('search.placeholder')" />
       </div>
       <div class="topbar-user">
         <template v-if="isAuthenticated">
           <div class="user-menu">
             <span class="user-email">{{ user?.email?.split('@')[0] }}</span>
-            <button class="user-logout" @click="handleLogout" title="退出登录">退出</button>
+            <button class="user-logout" @click="handleLogout" :title="t('auth.logoutTitle')">{{ t('auth.logout') }}</button>
           </div>
         </template>
         <button v-else class="login-btn" @click="toggleAuth">
           <span class="login-icon">🔑</span>
-          <span class="login-text">登录</span>
+          <span class="login-text">{{ t('auth.login') }}</span>
         </button>
       </div>
     </nav>
@@ -97,7 +98,7 @@ function handleClick(item) {
       @click.prevent="handleClick(item)"
     >
       <span class="bottom-nav-icon">{{ itemIcons[item.id] }}</span>
-      <span class="bottom-nav-label">{{ item.label }}</span>
+      <span class="bottom-nav-label">{{ t(item.labelKey) }}</span>
     </a>
   </nav>
 </template>

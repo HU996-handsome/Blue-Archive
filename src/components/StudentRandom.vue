@@ -1,25 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
+import { useSchoolColors } from '../composables/useSchoolColors.js'
+
+const t = inject('t')
+const locale = inject('locale')
+const { getSchoolColor } = useSchoolColors()
 
 const students = ref([])
 const current = ref(null)
 const isAnimating = ref(false)
-
-const schoolColors = {
-  Gehenna: '#ff6b6b',
-  Trinity: '#74b9ff',
-  Millennium: '#a29bfe',
-  Abydos: '#ffeaa7',
-  Shanhaijing: '#55efc4',
-  Hyakkiyako: '#fd79a8',
-  RedWinter: '#dfe6e9',
-  SRT: '#00cec9',
-  Arius: '#636e72',
-  Valkyrie: '#e17055',
-  ETC: '#b2bec3',
-  Tokiwadai: '#e056fd',
-  Sakugawa: '#badc58',
-}
 
 onMounted(async () => {
   try {
@@ -51,19 +40,15 @@ function roll() {
 function getStars(n) {
   return '★'.repeat(n) + '☆'.repeat(3 - n)
 }
-
-function getSchoolColor(school) {
-  return schoolColors[school] || '#2dafff'
-}
 </script>
 
 <template>
   <div class="random-section glass-card">
     <div class="random-header">
       <span class="random-icon">🎲</span>
-      <span class="random-title">学生随机器</span>
+      <span class="random-title">{{ t('tools.studentRandom') }}</span>
       <button class="btn random-btn" :class="{ spinning: isAnimating }" @click="roll">
-        {{ isAnimating ? '抽取中...' : '🎲 抽一个' }}
+        {{ isAnimating ? t('tools.pulling') : '🎲 ' + t('tools.pull') }}
       </button>
     </div>
     <Transition name="card-pop" mode="out-in">
@@ -74,10 +59,10 @@ function getSchoolColor(school) {
         <div class="random-info">
           <div class="random-name">{{ current.name }}</div>
           <div class="random-meta">
-            <span class="random-school" :style="{ color: getSchoolColor(current.school) }">{{ current.school }}</span>
+            <span class="random-school" :style="{ color: getSchoolColor(current.school) }">{{ t('schoolNames.' + current.school) || current.school }}</span>
             <span class="random-stars">{{ getStars(current.star) }}</span>
           </div>
-          <div class="random-bd">🎂 {{ current.bd === '-' ? '未知' : current.bd }}</div>
+          <div class="random-bd">🎂 {{ current.bd === '-' ? t('tools.unknown') : current.bd }}</div>
         </div>
       </div>
     </Transition>

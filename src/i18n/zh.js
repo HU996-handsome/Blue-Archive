@@ -178,7 +178,6 @@ export default {
     searchStudent: '搜索学生...',
     allSchools: '全部学校',
     allStars: '全部星级',
-    voiceLibrary: '语音库',
     shortcuts: '快捷键',
     shortcut_search: '搜索',
     shortcut_tools: '小工具',
@@ -197,8 +196,6 @@ export default {
     calculate: '计算',
     requiredMaterials: '所需素材（单角色）',
     materialNote: '* 技能和装备按 3 个槽位计算',
-    teamBuilder: '队伍推荐',
-    all: '全部',
   },
   quotes: [
     { text: '老师，今天也要加油哦！', char: '阿罗娜' },

@@ -178,7 +178,6 @@ export default {
     searchStudent: '生徒を検索...',
     allSchools: '全学校',
     allStars: '全レアリティ',
-    voiceLibrary: 'ボイスライブラリ',
     shortcuts: 'ショートカット',
     shortcut_search: '検索',
     shortcut_tools: 'ツール',
@@ -197,8 +196,6 @@ export default {
     calculate: '計算',
     requiredMaterials: '必要素材（1キャラ）',
     materialNote: '* スキルと装備は3スロットで計算',
-    teamBuilder: 'PTおすすめ',
-    all: 'すべて',
   },
   quotes: [
     { text: '先生、今日も頑張りましょう！', char: 'アロナ' },

@@ -7,11 +7,10 @@ import BirthdayCalendar from './BirthdayCalendar.vue'
 import GachaSimulator from './GachaSimulator.vue'
 import GachaHistory from './GachaHistory.vue'
 import StudentCollection from './StudentCollection.vue'
-import VoiceLibrary from './VoiceLibrary.vue'
 import GiftGuide from './GiftGuide.vue'
 import StudentCompare from './StudentCompare.vue'
 import MaterialPlanner from './MaterialPlanner.vue'
-import TeamBuilder from './TeamBuilder.vue'
+
 
 const showTools = inject('showTools')
 const closeTools = inject('closeTools')
@@ -42,13 +41,11 @@ function onGachaPull(results) {
           <GachaSimulator @pull="onGachaPull" />
           <GachaHistory ref="gachaHistoryRef" />
           <StudentCollection />
-          <VoiceLibrary />
           <div class="tools-row">
             <GiftGuide class="tools-item" />
             <StudentCompare class="tools-item" />
           </div>
           <MaterialPlanner />
-          <TeamBuilder />
         </div>
       </div>
     </div>

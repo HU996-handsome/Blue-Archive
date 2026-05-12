@@ -235,7 +235,7 @@ const searchedStudents = computed(() => {
   const q = birthdaySearch.value.trim().toLowerCase()
   if (!q) return []
   return allStudents.value.filter(s =>
-    s.name.toLowerCase().includes(q) || (schoolNames.value[s.school] || '').includes(q)
+    s.name.toLowerCase().includes(q) || (schoolNames[s.school] || '').includes(q)
   ).slice(0, 8)
 })
 
@@ -387,7 +387,7 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
         <div class="birthday-badge">{{ t('sidebar.todayBirthday') }}</div>
         <div v-for="s in todayBirthdays" :key="s.name" class="birthday-item today">
           <span class="birthday-name">{{ s.name }}</span>
-          <span class="birthday-school">{{ schoolNames.value[s.school] || s.school }}</span>
+          <span class="birthday-school">{{ schoolNames[s.school] || s.school }}</span>
         </div>
       </div>
       <div v-if="upcomingBirthdays.length" class="birthday-upcoming">
@@ -414,7 +414,7 @@ onUnmounted(() => { clearInterval(timer); document.removeEventListener('click', 
           <div v-for="s in searchedStudents" :key="s.name+s.bd" class="birthday-result-item">
             <div class="birthday-result-info">
               <span class="birthday-result-name">{{ s.name }}</span>
-              <span class="birthday-result-school">{{ schoolNames.value[s.school] || s.school }}</span>
+              <span class="birthday-result-school">{{ schoolNames[s.school] || s.school }}</span>
             </div>
             <span class="birthday-result-date">{{ formatBd(s.bd) }}</span>
           </div>
